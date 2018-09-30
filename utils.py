@@ -103,7 +103,7 @@ def draw_graph(x, y, edge_list, output_file):
  for i in range(len(x)):
   circle = plt.Circle((x[i], y[i]), (xmax+ymax-xmin-ymin)/200.00, clip_on=False)
   ax.add_artist(circle)
-  ax.text(x[i]+1, y[i]+1, str(i), fontsize=12)
+  #ax.text(x[i]+1, y[i]+1, str(i), fontsize=12)
  for i in range(len(edge_list)):
   ax.plot([x[edge_list[i][0]], x[edge_list[i][1]]], [y[edge_list[i][0]], y[edge_list[i][1]]], 'k-', lw=2)
  ax.set_xlim([min(xmin,ymin),max(xmax,ymax)])
