@@ -210,4 +210,13 @@ def write_as_txt(file_name, graph, x, y):
   file.write(str(e[0])+" "+str(e[1])+"\n")
  file.close()
 
+def write_as_txt_random_position_with_grid_size(file_name, graph, x_dim, y_dim):
+ file = open(file_name,"w")
+ file.write(str(graph.number_of_nodes())+"\n");
+ for j in range(graph.number_of_nodes()):
+  file.write(str(random.randint(1,x_dim))+" "+str(random.randint(1,y_dim))+"\n")
+ edges = graph.edges()
+ for e in edges:
+  file.write(str(e[0])+" "+str(e[1])+"\n")
+ file.close()
 
