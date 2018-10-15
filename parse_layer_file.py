@@ -24,7 +24,7 @@ def labeled_to_unlabeled(labeled_edges, file_name):
  file.close()
 
 
-def parse_dot_file(filename):
+def parse_dot_file(filename, output_filename):
  file = open(filename, 'r')
  arr = file.read().split('{')[1].split('}')[0].split(';')
  labeled_edges = []
@@ -34,7 +34,7 @@ def parse_dot_file(filename):
   labeled_edges[i].append(t[1])
   labeled_edges[i].append(t[3])
  #print(labeled_edges)
- labeled_to_unlabeled(labeled_edges, 'Layer7.txt')
+ labeled_to_unlabeled(labeled_edges, output_filename)
 
 
 def get_connected_component():
@@ -44,6 +44,7 @@ def get_connected_component():
  #print(graphs[0].number_of_nodes())
  #write_as_txt_random_position_with_grid_size('Layer7_component.txt', graphs[0], 3000, 3000)
 
-parse_dot_file('Layer7.dot')
+parse_dot_file('Layer7.dot', 'Layer7.txt')
+#parse_dot_file('Layer6.dot', 'Layer6.txt')
 #get_connected_component()
 
