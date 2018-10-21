@@ -6,9 +6,20 @@ python3 parse_layer7.py
 python3 run_force_directed.py 
 python3 draw_layer7.py 
 
+---------------------------------------------------------------------------------------------
+
+Try multi level only for Layer 6 and 7 to reduce number of crossings
 
 python3 parse_layer_file.py
 python3 run_force_directed.py
 python3 draw_layer_file.py
 
+----------------------------------------------------------------------------------------------
+
+set cola
+
+for lucida: source /home/abureyanahmed/Desktop/virtest/bin/activate
+
+1. python parse_layer_file.py
+2. python dot_to_setcola.py
 

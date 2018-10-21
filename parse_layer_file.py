@@ -164,11 +164,13 @@ def fd_top_down(file_names, node_map_top, node_map_bot):
 
 #parse_dot_file('Layer7.dot', 'Layer7.txt')
 #parse_dot_file('Layer6.dot', 'Layer6.txt')
+for i in range(1,8):
+ parse_dot_file('Layer'+str(i)+'.dot', 'Layer'+str(i)+'.txt')
 #get_connected_component()
 
 def multi_level_GD():
  node_map_top, node_map_bot = parse_files(['Layer6', 'Layer7'])
  fd_top_down(['Layer6.txt', 'Layer7.txt'], node_map_top, node_map_bot)
 
-multi_level_GD()
+#multi_level_GD()
 
