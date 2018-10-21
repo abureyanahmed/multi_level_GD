@@ -11,5 +11,6 @@ for i in range(len(coord_list)):
 print(len(x))
 print(len(edge_list))
 
-draw_graph(x, y, edge_list, 'Layer7.png')
+#draw_graph(x, y, edge_list, 'Layer7.png')
+draw_graph(x, y, edge_list, 'Layer6.png')
 

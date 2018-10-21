@@ -7,6 +7,8 @@ python3 run_force_directed.py
 python3 draw_layer7.py 
 
 
-python parse_layer_file.py
+python3 parse_layer_file.py
+python3 run_force_directed.py
+python3 draw_layer_file.py
 
 

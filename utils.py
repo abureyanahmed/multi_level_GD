@@ -4,6 +4,23 @@ from edge_crossing import *
 from input_functions import *
 import matplotlib.pyplot as plt
 
+def number_of_intersections(file_name):
+ #print(file_name)
+ if file_name.endswith('.dot'):
+  node_coords, edge_list = parse_dot_file(file_name)
+ elif file_name.endswith('.txt'):
+  n, node_coords, edge_list = take_input(file_name)
+ count = 0
+ for i in range(len(edge_list)):
+  for j in range(i+1,len(edge_list)):
+   edge1 = edge_list[i]
+   edge2 = edge_list[j]
+   #if not share_vertex(edge1, edge2):
+   if(doIntersect(node_coords[edge1[0]][0], node_coords[edge1[0]][1], node_coords[edge1[1]][0], node_coords[edge1[1]][1], node_coords[edge2[0]][0], node_coords[edge2[0]][1], node_coords[edge2[1]][0], node_coords[edge2[1]][1])):
+    count = count + 1
+    #print(str(edge1)+" intersects "+str(edge2))
+ return count
+
 
 def make_segment(p1x, p1y, p2x, p2y):
  segment = (p1x, p1y)
