@@ -16,24 +16,32 @@ def txt_to_setcola(file_name, output_file):
   nodes.append(node)
  graph['nodes'] = nodes
  edges = []
- root = 7
- for i in range(len(edge_list)):
+ root = 11
+# for i in range(len(edge_list)):
+#  edge = {}
+#  if edge_list[i][1] == root:
+#   t = edge_list[i][0]
+#   edge_list[i][0] = edge_list[i][1]
+#   edge_list[i][1] = t
+#  elif G.degree(edge_list[i][0])==1:
+#   t = edge_list[i][0]
+#   edge_list[i][0] = edge_list[i][1]
+#   edge_list[i][1] = t
+#  edge['source']=edge_list[i][0]
+#  edge['target']=edge_list[i][1]
+#  edges.append(edge)
+ for e in nx.dfs_edges(G, root):
+  u, v = e
   edge = {}
-  if edge_list[i][1] == root:
-   t = edge_list[i][0]
-   edge_list[i][0] = edge_list[i][1]
-   edge_list[i][1] = t
-  elif G.degree(edge_list[i][0])==1:
-   t = edge_list[i][0]
-   edge_list[i][0] = edge_list[i][1]
-   edge_list[i][1] = t
-  edge['source']=edge_list[i][0]
-  edge['target']=edge_list[i][1]
+  edge['source'] = u
+  edge['target'] = v
   edges.append(edge)
  graph['links'] = edges
  constraintDefinitions = []
  number_of_constraintDefinitions = 2
- for i in range(number_of_constraintDefinitions):
+# number_of_constraintDefinitions = 1
+# for i in range(number_of_constraintDefinitions):
+ for i in range(2,3):
   if i == 0:
    constraintDefinition = {}
    constraintDefinition['name'] = 'layer'
@@ -44,6 +52,7 @@ def txt_to_setcola(file_name, output_file):
    constraint = {}
    constraint['constraint'] = 'align'
    constraint['axis'] = 'x'
+   constraint['orientation'] = 'center'
    constraints.append(constraint)
    constraintDefinition['forEach'] = constraints
    constraintDefinitions.append(constraintDefinition)
@@ -56,6 +65,22 @@ def txt_to_setcola(file_name, output_file):
    constraint['axis'] = 'y'
    constraint['by'] = 'depth'
    constraint['reverse'] = 'true'
+   constraints.append(constraint)
+   constraintDefinition['forEach'] = constraints
+   constraintDefinitions.append(constraintDefinition)
+  if i == 2:
+   constraintDefinition = {}
+   from_definition = {}
+   from_definition['expr'] = "node.type === 'unknown'"
+   constraintDefinition['from'] = from_definition
+   sets_definition = {}
+   collect_arr = ["node._id", "node.neighbors.extract('_id')"]
+   sets_definition['collect'] = collect_arr
+   constraintDefinition['sets'] = sets_definition
+   constraints = []
+   constraint = {}
+   constraint['constraint'] = 'hull'
+   constraint['style'] = 'visible'
    constraints.append(constraint)
    constraintDefinition['forEach'] = constraints
    constraintDefinitions.append(constraintDefinition)
