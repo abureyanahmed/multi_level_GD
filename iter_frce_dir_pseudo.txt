@@ -1,0 +1,31 @@
+Iterative force directed algorithm:
+  Input: A graph G with labels and label sizes
+  Output: A drawing D of G
+  While there is an edge not drawn in G
+    Take an edge e that is connected to the graph of edges that are currently drawn
+    Let e=(u, v) and u is in the current drawing D and v is not drawn yet
+    Note that both u and v can not be already drawn since G is a tree
+    Let u has |N_u| neighbors in D
+    Divide the region around u into |N_u| angular regions based on the drawing
+    Draw e in the largest region and scale the drawing of e and label of v so that they don't overlap or cross with other labels or edges respectively
+    Note that we can also put e in a position based on the graph topology: that will be helpful when we visualize the whole graph
+    Let r be the center of D: r has the minimum eccentricity
+    Consider all the nodes in descending order based on the distance from r
+      Let w be the current node that has not cosidered earliear and has the maximum distance from r
+      Compute the attraction and repulsion for w
+      Put larger weight while computing the repulsive force of w from v since we need space for v
+      Let the current position of w is p and new position is p'
+      If w is not equal to v:
+        If moving w from p to p' does not introduce any crossing or overlap, just put w in p'
+        Otherwise run a 2d binary search to find a suitable position
+      Else:
+        If the current label size of v is equal to required label size:
+          If moving v from p to p' does not introduce any crossing or overlap, just put v in p'
+          Otherwise run a 2d binary search to find a suitable position
+        Else:
+          Run a 2d binary search to find position: in every available position run a binary search on label size
+      Here, to compute the corssing and overlap we can just simpley cosider all edges and vertices
+      However, for future we shoule use some structure like quad tree to minimize computation
+    For every vertex check the difference between p and p', if the maximum difference is very small and v achived the required label size, terminate
+    Otherwise go back to line 13
+      
