@@ -11,7 +11,7 @@ Iterative force directed algorithm:
     Note that we can also put e in a position based on the graph topology: that will be helpful when we visualize the whole graph
     Let r be the center of D: r has the minimum eccentricity
     Consider all the nodes in descending order based on the distance from r
-      Let w be the current node that has not cosidered earliear and has the maximum distance from r
+      Let w be the current node that has not considered earlier and has the maximum distance from r
       Compute the attraction and repulsion for w
       Put larger weight while computing the repulsive force of w from v since we need space for v
       Let the current position of w is p and new position is p'
@@ -24,8 +24,8 @@ Iterative force directed algorithm:
           Otherwise run a 2d binary search to find a suitable position
         Else:
           Run a 2d binary search to find position: in every available position run a binary search on label size
-      Here, to compute the corssing and overlap we can just simpley cosider all edges and vertices
-      However, for future we shoule use some structure like quad tree to minimize computation
-    For every vertex check the difference between p and p', if the maximum difference is very small and v achived the required label size, terminate
+      Here, to compute the crossing and overlap we can just simply consider all edges and vertices
+      However, for future we should use some structure like quad tree to minimize computation
+    For every vertex check the difference between p and p', if the maximum difference is very small and v achieved the required label size, terminate
     Otherwise go back to line 13
       
