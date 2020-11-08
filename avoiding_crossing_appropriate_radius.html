@@ -79,14 +79,14 @@ text {
 <!-- <script src="math_genealogy_Newton.js"></script> -->
 <script src="hard_instance.js"></script>
 <script>
-//enable_GUI = false;
-enable_GUI = true;
+enable_GUI = false;
+//enable_GUI = true;
 //edgeLengthAddition = 200;
 //edgeLengthAddition = 100;
 //edgeLengthAddition = 50;
 edgeLengthAddition = 0;
-//show_collision_circle = false;
-show_collision_circle = true;
+show_collision_circle = false;
+//show_collision_circle = true;
 class D3ForceGraph {
   constructor(graphDiv, svgId) {
     let t = this;
@@ -193,10 +193,12 @@ class D3ForceGraph {
 
   determine_collision_force(d)
   {
-    if(typeof myGraph == "undefined")return subdivision_length/2;
+    //if(typeof myGraph == "undefined")return subdivision_length/2;
+    if(typeof myGraph == "undefined")return collide_arr[d.id];
     //console.log(d, d.id);
     let neighbors = myGraph.AdjList.get(d.id);
-    if(typeof neighbors == "undefined")return subdivision_length/2;
+    //if(typeof neighbors == "undefined")return subdivision_length/2;
+    if(typeof neighbors == "undefined")return collide_arr[d.id];
     //if(typeof neighbors == "undefined"){graph.simulation.stop();stopAddingEdges();}
     //console.log("neighbors", neighbors);
     //if(neighbors.length>2)return subdivision_length/2;
@@ -216,15 +218,20 @@ class D3ForceGraph {
     }
     //return max_dis/2;
     if(neighbors.length<=2){
-      if(min_dis==10000000)return subdivision_length/2;
-      return min_dis/2;
+      //if(min_dis==10000000)return subdivision_length/2;
+      if(min_dis==10000000)return collide_arr[d.id];
+      //return min_dis/2;
+      collide_arr[d.id] = min_dis/2;
     }
-    else return max_dis/2;
+    //else return max_dis/2;
+    else collide_arr[d.id] = max_dis/2;
     //else return min_dis/2;
+    return collide_arr[d.id];
   }
 
   getRadius(d) {
-    return this.determine_collision_force(d);
+    //return this.determine_collision_force(d);
+    return collide_arr[d.id];
   }
   getRadiusOld(d) {
     const min = 5;
@@ -547,7 +554,59 @@ id_to_label =  {0: 'Suzanne Vega', 1: 'Kate Bush', 2: 'Indigo Girls', 3: 'Joni M
 edge_distance =  {0: 100, 1: 50, 2: 100, 3: 100, 4: 100, 5: 50, 6: 150, 7: 100, 8: 100, 9: 50, 10: 150, 11: 100, 12: 100, 13: 100, 14: 100, 15: 50, 16: 150, 17: 100, 18: 100, 19: 100, 20: 100, 21: 50, 22: 50, 23: 150, 24: 100, 25: 150, 26: 150, 27: 100, 28: 50, 29: 50, 30: 200, 31: 150, 32: 150, 33: 100, 34: 100, 35: 50, 36: 50, 37: 50, 38: 200, 39: 150, 40: 150, 41: 150, 42: 150, 43: 100, 44: 100, 45: 50, 46: 50, 47: 50, 48: 50, 49: 200, 50: 100, 51: 100, 52: 100, 53: 150, 54: 100, 55: 50, 56: 50, 57: 50, 58: 50, 59: 250, 60: 250, 61: 250, 62: 100, 63: 100, 64: 100, 65: 150, 66: 150, 67: 100, 68: 100, 69: 50, 70: 50, 71: 50, 72: 50, 73: 50, 74: 200, 75: 250, 76: 100, 77: 100, 78: 150, 79: 150, 80: 150, 81: 150, 82: 100, 83: 50, 84: 50, 85: 50, 86: 50, 87: 50, 88: 50, 89: 50, 90: 50, 91: 50, 92: 50, 93: 50, 94: 50, 95: 250, 96: 250, 97: 100, 98: 150, 99: 100, 100: 50, 101: 50, 102: 50, 103: 50, 104: 50, 105: 50, 106: 50, 107: 200, 108: 250, 109: 250, 110: 100, 111: 150, 112: 100, 113: 50, 114: 50, 115: 50, 116: 50, 117: 50, 118: 50, 119: 250, 120: 150, 121: 100, 122: 50, 123: 50, 124: 50, 125: 50, 126: 50, 127: 50, 128: 50, 129: 250, 130: 150, 131: 100, 132: 100, 133: 50, 134: 50, 135: 50, 136: 50, 137: 50, 138: 50, 139: 50, 140: 250, 141: 100, 142: 50, 143: 50, 144: 200, 145: 100, 146: 50, 147: 50, 148: 200, 149: 100, 150: 50, 151: 50, 152: 200, 153: 100}
 */
 
-function subdivide_edges(subdivision_length, subdivision_factor)
+function subdivide_edges(non_subdivided_circle_radius, subdivided_circle_radius)
+{
+  var new_edges = [];
+  var new_distance = [];
+  var counter = 0;
+  var new_label_to_id = {};
+  new_label_to_id[my_edges[0][0]] = counter;
+  var new_id_to_label = {};
+  new_id_to_label[counter] = my_edges[0][0];
+  counter = counter + 1;
+  collide_arr = [];
+  collide_arr.push(non_subdivided_circle_radius);
+  var n = my_edges.length + 1;
+  //for(var i=0;i<n;i++)
+  //  collide_arr.push(non_subdivided_circle_radius);
+  for(var i=0;i<my_edges.length;i++)
+  {
+    var dis = edge_distance[i];
+    var n_sub = (dis-2*non_subdivided_circle_radius)/(2*subdivided_circle_radius)+1;
+    var prev_ver = n+"";
+    new_label_to_id[prev_ver] = counter;
+    new_id_to_label[counter] = prev_ver;
+    counter = counter + 1;
+    new_edges.push([my_edges[i][0], prev_ver]);
+    new_distance.push(non_subdivided_circle_radius+subdivided_circle_radius);
+    collide_arr.push(subdivided_circle_radius);
+    n = n+1;
+    for(var j=0;j<n_sub-1;j++)
+    {
+      var cur_ver = n+"";
+      new_label_to_id[cur_ver] = counter;
+      new_id_to_label[counter] = cur_ver;
+      counter = counter + 1;
+      new_edges.push([prev_ver, cur_ver]);
+      new_distance.push(2*subdivided_circle_radius);
+      collide_arr.push(subdivided_circle_radius);
+      prev_ver = cur_ver;
+      n = n+1;
+    }
+    new_label_to_id[my_edges[i][1]] = counter;
+    new_id_to_label[counter] = my_edges[i][1];
+    counter = counter + 1;
+    new_edges.push([prev_ver, my_edges[i][1]]);
+    new_distance.push(non_subdivided_circle_radius+subdivided_circle_radius);
+    collide_arr.push(non_subdivided_circle_radius);
+  }
+  my_edges = new_edges;
+  edge_distance = new_distance;
+  label_to_id = new_label_to_id;
+  id_to_label = new_id_to_label;
+}
+
+function subdivide_edges_old(subdivision_length, subdivision_factor)
 {
   var new_edges = [];
   var new_distance = [];
@@ -600,11 +659,21 @@ function subdivide_edges(subdivision_length, subdivision_factor)
   label_to_id = new_label_to_id;
   id_to_label = new_id_to_label;
 }
+/*
 subdivision_length = 50;
 //subdivision_length = 100;
-//subdivision_factor = 1.0;
-subdivision_factor = 1.5;
+subdivision_factor = 1.0;
+//subdivision_factor = 1.5;
 subdivide_edges(subdivision_length, subdivision_factor);
+*/
+min_edge_len = 50;
+non_subdivided_circle_radius_denominator = 4;
+//non_subdivided_circle_radius_denominator = 8;
+non_subdivided_circle_radius = min_edge_len/non_subdivided_circle_radius_denominator;
+subdivided_circle_radius_denominator = 5;
+//subdivided_circle_radius_denominator = 10;
+subdivided_circle_radius = (min_edge_len-2*non_subdivided_circle_radius)/(2*subdivided_circle_radius_denominator);
+subdivide_edges(non_subdivided_circle_radius, subdivided_circle_radius);
 
 // Queue class 
 class Queue 
@@ -852,9 +921,9 @@ crossing_step_cnt=0;
 crossing_step_speed=20;
 //crossing_step_type="circular";
 crossing_step_type="straight";
-intervalTime = 500;
+//intervalTime = 500;
 //intervalTime = 100;
-//intervalTime = 50; //***
+intervalTime = 50; //***
 //intervalTime = 20;
 //intervalTime = 10;
 //intervalTime = 5;

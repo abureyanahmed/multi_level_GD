@@ -38,12 +38,13 @@ text {
 </head><body><div id="ib-d3-graph-div">
 <!-- <svg id="testSvgId" width="960" height="500"></svg> -->
 <script src="./dynamic_update_files/d3.v4.min.js"></script>
-<script src="crossings_collision.js"></script>
+<script src="crossings_initial.js"></script>
 <!-- <script src="area_coverage.js"></script> -->
 <script src="area_coverage_mingwei.js"></script>
 <!-- <script src="ideal_edge_lenghth_preservation.js"></script> -->
 <script src="ideal_edge_lenghth_preservation_mingwei.js"></script>
 <!-- 2500 3000 3500 4000 4500 5000 -->
+<script src="low_degree_topics_data_14.js"></script>  <!-- 5000 -->
 <!-- <script src="low_degree_topics_data_8.js"></script> -->  <!-- 2000 -->
 <!-- <script src="low_degree_topics_data_7.js"></script> -->  <!-- 1600 -->
 <!-- <script src="low_degree_topics_data_6.js"></script> -->  <!-- 1200 -->
@@ -77,7 +78,7 @@ text {
 <!-- <script src="math_genealogy_50.js"></script> -->
 <!-- <script src="math_genealogy_Euler.js"></script> -->
 <!-- <script src="math_genealogy_Newton.js"></script> -->
-<script src="hard_instance.js"></script>
+<!-- <script src="hard_instance.js"></script> -->
 <script>
 //enable_GUI = false;
 enable_GUI = true;
@@ -85,8 +86,8 @@ enable_GUI = true;
 //edgeLengthAddition = 100;
 //edgeLengthAddition = 50;
 edgeLengthAddition = 0;
-//show_collision_circle = false;
-show_collision_circle = true;
+show_collision_circle = false;
+//show_collision_circle = true;
 class D3ForceGraph {
   constructor(graphDiv, svgId) {
     let t = this;
@@ -180,10 +181,10 @@ class D3ForceGraph {
       .force("charge", d3.forceManyBody().strength(-10).distanceMin(10000))
       //.force("charge", d3.forceManyBody().strength(-10).distanceMin(500))
       //.force("charge", d3.forceManyBody().strength(-50))
-      //.force("collide", d3.forceCollide(25))
+      .force("collide", d3.forceCollide(25))
       //.force("collide", d3.forceCollide(50))
       //.force("collide", d3.forceCollide(d=>collide_arr[d.id]))
-      .force("collide", d3.forceCollide(d=>t.determine_collision_force(d)))
+      //.force("collide", d3.forceCollide(d=>t.determine_collision_force(d)))
       //.force("x", d3.forceX())
       //.force("y", d3.forceY())
       .force("center", d3.forceCenter(t.center.x, t.center.y));
@@ -378,6 +379,44 @@ class D3ForceGraph {
 
     function handleTicked() {
       //console.log("Number of crossings:", linkCrossingsParam(graph.graphData.links).length);
+      if(safeMode)
+      {
+        console.log("Inside safemode");
+        let crd_x_t = {};
+        let crd_y_t = {};
+        for(var i=0;i<=my_edges.length;i++)
+        {
+          crd_x_t[i] = graph.graphData.nodes[i].x;
+          crd_y_t[i] = graph.graphData.nodes[i].y;
+          graph.graphData.nodes[i].x = crd_x[i];
+          graph.graphData.nodes[i].y = crd_y[i];
+        }
+        for(var i=0;i<=my_edges.length;i++)
+        {
+          graph.graphData.nodes[i].x = crd_x_t[i];
+          graph.graphData.nodes[i].y = crd_y_t[i];
+          let introducesCrossing = false;
+          for(let j=0;j<node_to_links[i].length;j++)
+          {
+            let link = node_to_links[i][j];
+            if(hasLinkCrossingsWithInputLink(link))
+            {
+              introducesCrossing = true;
+              break;
+            }
+          }
+          if(introducesCrossing)
+          {
+            graph.graphData.nodes[i].x = crd_x[i];
+            graph.graphData.nodes[i].y = crd_y[i];
+          }
+          else
+          {
+            crd_x[i] = crd_x_t[i];
+            crd_y[i] = crd_y_t[i];
+          }
+        }
+      }
       graphLinksData
         .attr("x1", d => d.source.x)
         .attr("y1", d => d.source.y)
@@ -604,7 +643,7 @@ subdivision_length = 50;
 //subdivision_length = 100;
 //subdivision_factor = 1.0;
 subdivision_factor = 1.5;
-subdivide_edges(subdivision_length, subdivision_factor);
+//subdivide_edges(subdivision_length, subdivision_factor);
 
 // Queue class 
 class Queue 
@@ -839,9 +878,11 @@ function myInit() {
   t0 = performance.now();
   time_when_last_edge_added = t0;
   //let nodes = [ {"id": 0, "name": "machine lear"} ];
-  let nodes = [ {"id": 0, "name": my_edges[0][0]} ];
+  let nodes = [ {"id": 0, "name": my_edges[0][0], "x": crd_x[0], "y": crd_y[0]} ];
   let links = [];
   graph.add(nodes, links);
+  graph.graphData.nodes[0].fx = graph.graphData.nodes[0].x;
+  graph.graphData.nodes[0].fy = graph.graphData.nodes[0].y;
   myGraph = new MyGraph(id_to_label.length);
   myGraph.addVertex(0);
 }
@@ -852,12 +893,12 @@ crossing_step_cnt=0;
 crossing_step_speed=20;
 //crossing_step_type="circular";
 crossing_step_type="straight";
-intervalTime = 500;
+//intervalTime = 500;
 //intervalTime = 100;
 //intervalTime = 50; //***
 //intervalTime = 20;
 //intervalTime = 10;
-//intervalTime = 5;
+intervalTime = 5;
 //steps_before_fix_position = 1;
 //steps_before_fix_position = 50;
 steps_before_fix_position = 50000;
@@ -940,7 +981,7 @@ function startAddingEdges() {
       return; 
     }*/
     //document.getElementById("number_of_crossings").value = linkCrossingsParam(graph.graphData.links).length;
-    if(linkCrossingsParam(graph.graphData.links).length>0)
+    /*if(linkCrossingsParam(graph.graphData.links).length>0)
     //if(linkCrossingsParam(graph.graphData.links).length>=20)
     //if(linkCrossingsParam(graph.graphData.links).length>=200)
     //if(!addEdgePhase)
@@ -952,8 +993,8 @@ function startAddingEdges() {
       addEdgeInterval = setInterval(startAddingEdges, intervalTime);
       return; 
     }
-    else if(my_count>=my_edges.length){
-    //if(my_count>=my_edges.length){
+    else if(my_count>=my_edges.length){*/
+    if(my_count>=my_edges.length){
       stopAddingEdges();
       var t1 = performance.now();
       //remove_existing_crossings();
@@ -987,16 +1028,20 @@ function startAddingEdges() {
     let newId = label_to_id[my_edges[my_count][1]];
     //let newNode = {"id": randomId, "name": "server " + randomId};
     let newNode = {"id": newId, "name": my_edges[my_count][1]};
-    if (existingNode.x) {
+    /*if (existingNode.x) {
       //newNode.x = existingNode.x;
       //newNode.y = existingNode.y;
       let new_crd = farthest_location(existingNode);
       //let new_crd = anti_clockwise_location(existingNode);
       newNode.x = new_crd[0];
       newNode.y = new_crd[1];
-    }
+    }*/
+    newNode.x = crd_x[newId];
+    newNode.y = crd_y[newId];
     let newLink = {source: existingNode.id, target: newId};
     graph.add([newNode], [newLink]);
+    graph.graphData.nodes[newId].fx = graph.graphData.nodes[newId].x;
+    graph.graphData.nodes[newId].fy = graph.graphData.nodes[newId].y;
     myGraph.addVertex(newId);
     myGraph.addEdge(existingNode.id, newId);
     let cur_time = performance.now();
@@ -1009,6 +1054,103 @@ function startAddingEdges() {
     }*/
     my_count++;
     graph.simulation.alpha(1).restart();
+}
+
+function initForceDirected()
+{
+  for(var i=0;i<=my_edges.length;i++)
+  {
+    //if(randomNumber(0,100)<=5)
+    //{
+      graph.graphData.nodes[i].fx = null;
+      graph.graphData.nodes[i].fy = null;
+    //}
+  }
+  if(my_edges.length>2000)
+  {
+    safeMode = true;
+    node_to_links = {};
+    for(var i=0;i<=my_edges.length;i++)
+    {
+      node_to_links[i] = [];
+    }
+    for(var i=0;i<graph.graphData.links.length;i++)
+    {
+      node_to_links[graph.graphData.links[i].source.id].push(graph.graphData.links[i]);
+      node_to_links[graph.graphData.links[i].target.id].push(graph.graphData.links[i]);
+    }
+  }
+  intervalTime = 500;
+  startForceDirectedInterval = setInterval(startForceDirected, intervalTime);
+}
+
+function startForceDirected()
+{
+  graph.simulation.alpha(1).restart();
+}
+
+var startForceDirectedInterval = setInterval(startForceDirected, intervalTime);
+
+eps_movement = 2;
+//eps_movement = 20;
+//eps_movement = 50;
+safeMode = false;
+if(my_edges.length<=2000)
+{
+  eps_movement = -1;
+}
+function stopForceDirected() {
+  clearInterval(startForceDirectedInterval);
+  if(safeMode==false)
+  {
+    if(eps_movement!=-1){
+      for(var i=0;i<=my_edges.length;i++)
+      {
+        let x_diff = graph.graphData.nodes[i].x - crd_x[i];
+        let y_diff = graph.graphData.nodes[i].y - crd_y[i];
+        let node_movement = Math.sqrt(x_diff*x_diff + y_diff*y_diff);
+        if(node_movement>eps_movement)
+        {
+          let eps_fact = eps_movement/node_movement;
+          graph.graphData.nodes[i].fx = crd_x[i] + x_diff*eps_fact;
+          graph.graphData.nodes[i].fy = crd_y[i] + y_diff*eps_fact;
+        }
+      }
+    }
+    else
+    {
+      for(var i=0;i<=my_edges.length;i++)
+      {
+        graph.graphData.nodes[i].fx = graph.graphData.nodes[i].x;
+        graph.graphData.nodes[i].fy = graph.graphData.nodes[i].y;
+      }
+    }
+    remove_existing_crossings();
+  }
+  /*for(var i=0;i<=my_edges.length;i++)
+  {
+    graph.graphData.nodes[i].fx = graph.graphData.nodes[i].x;
+    graph.graphData.nodes[i].fy = graph.graphData.nodes[i].y;
+  }*/
+  var t1 = performance.now();
+  //remove_existing_crossings();
+  console.log("Call to doSomething took " + (t1 - t0) + " milliseconds.");
+  //console.log("Ideal edge length preservation:", ideal_edge_length_preservation(graph.graphData.links, edge_distance));
+  console.log("Ideal edge length preservation:", ideal_edge_length_preservation(graph.graphData.links, edge_distance_org));
+  //area_coverage(graph.graphData.nodes);
+  let n_crossings = linkCrossingsParam(graph.graphData.links).length;
+  console.log("Number of crossings:", n_crossings);
+  if(safeMode==false)
+  {
+    if(n_crossings==0)
+    {
+      for(var i=0;i<=my_edges.length;i++)
+      {
+        crd_x[i] = graph.graphData.nodes[i].x;
+        crd_y[i] = graph.graphData.nodes[i].y;
+      }
+    }
+  }
 }
 
 /*
@@ -1307,6 +1449,8 @@ myInit();
 
 <input type="button" value="Add edge" onclick="startAddingEdges()">
 <input type="button" value="zoom in" onclick="zoomLabels()">
-<input type="button" value="zoom out" onclick="zoomOutLabels()"><br>
+<input type="button" value="zoom out" onclick="zoomOutLabels()">
+<input type="button" value="start" onclick="initForceDirected()">
+<input type="button" value="stop" onclick="stopForceDirected()"><br>
 
 </body></html>
