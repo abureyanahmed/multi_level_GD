@@ -45,6 +45,9 @@ text {
 <script src="ideal_edge_lenghth_preservation_mingwei.js"></script>
 <!-- 2500 3000 3500 4000 4500 5000 -->
 <script src="low_degree_topics_data_14.js"></script>  <!-- 5000 -->
+<!-- <script src="crd_5000.js"></script> -->  <!-- 5000 -->
+<!-- <script src="crd_5000_100.js"></script> -->  <!-- 5000 -->
+<script src="crd_5000_200.js"></script>  <!-- 5000 -->
 <!-- <script src="low_degree_topics_data_8.js"></script> -->  <!-- 2000 -->
 <!-- <script src="low_degree_topics_data_7.js"></script> -->  <!-- 1600 -->
 <!-- <script src="low_degree_topics_data_6.js"></script> -->  <!-- 1200 -->
@@ -181,8 +184,9 @@ class D3ForceGraph {
       .force("charge", d3.forceManyBody().strength(-10).distanceMin(10000))
       //.force("charge", d3.forceManyBody().strength(-10).distanceMin(500))
       //.force("charge", d3.forceManyBody().strength(-50))
-      .force("collide", d3.forceCollide(25))
+      //.force("collide", d3.forceCollide(25))
       //.force("collide", d3.forceCollide(50))
+      .force("collide", d3.forceCollide(100))
       //.force("collide", d3.forceCollide(d=>collide_arr[d.id]))
       //.force("collide", d3.forceCollide(d=>t.determine_collision_force(d)))
       //.force("x", d3.forceX())
@@ -381,60 +385,112 @@ class D3ForceGraph {
       //console.log("Number of crossings:", linkCrossingsParam(graph.graphData.links).length);
       if(safeMode)
       {
-        console.log("Inside safemode");
-        let crd_x_t = {};
-        let crd_y_t = {};
-        for(var i=0;i<=my_edges.length;i++)
-        {
-          crd_x_t[i] = graph.graphData.nodes[i].x;
-          crd_y_t[i] = graph.graphData.nodes[i].y;
-          graph.graphData.nodes[i].x = crd_x[i];
-          graph.graphData.nodes[i].y = crd_y[i];
-        }
-        for(var i=0;i<=my_edges.length;i++)
-        {
-          graph.graphData.nodes[i].x = crd_x_t[i];
-          graph.graphData.nodes[i].y = crd_y_t[i];
-          let introducesCrossing = false;
-          for(let j=0;j<node_to_links[i].length;j++)
+        if(!locked){
+          locked = true;
+          console.log("Safe mode iteration:", safeModeIter);
+          safeModeIter = safeModeIter + 1;
+          let crd_x_t = {};
+          let crd_y_t = {};
+          for(var i=0;i<=my_edges.length;i++)
           {
-            let link = node_to_links[i][j];
-            if(hasLinkCrossingsWithInputLink(link))
+            crd_x_t[i] = graph.graphData.nodes[i].x;
+            crd_y_t[i] = graph.graphData.nodes[i].y;
+            //graph.graphData.nodes[i].x = crd_x[i];
+            //graph.graphData.nodes[i].y = crd_y[i];
+          }
+          for(var i=0;i<=my_edges.length;i++)
+          {
+            //graph.graphData.nodes[i].x = crd_x_t[i];
+            //graph.graphData.nodes[i].y = crd_y_t[i];
+            let prev_x = crd_x[i];
+            let prev_y = crd_y[i];
+            crd_x[i] = crd_x_t[i];
+            crd_y[i] = crd_y_t[i];
+            let introducesCrossing = false;
+            for(let j=0;j<node_to_links[i].length;j++)
             {
-              introducesCrossing = true;
-              break;
+              let link = node_to_links[i][j];
+              if(hasLinkCrossingsWithInputLink(link, crd_x, crd_y))
+              {
+                introducesCrossing = true;
+                break;
+              }
+            }
+            /*if(introducesCrossing)
+            {
+              graph.graphData.nodes[i].x = crd_x[i];
+              graph.graphData.nodes[i].y = crd_y[i];
+            }
+            else
+            {
+              crd_x[i] = crd_x_t[i];
+              crd_y[i] = crd_y_t[i];
+            }*/
+            if(introducesCrossing)
+            {
+              crd_x[i] = prev_x;
+              crd_y[i] = prev_y;
             }
           }
-          if(introducesCrossing)
+          console.log("Number of crossings:", linkCrossingsWithCrds (crd_x, crd_y).length);
+          if(safeModeIter%100==0)
+          {
+            let crd_x_log = {};
+            let crd_y_log = {};
+            for(var i=0;i<=my_edges.length;i++)
+            { 
+              crd_x_log[i] = crd_x[i];
+              crd_y_log[i] = crd_y[i];
+            }
+            console.log(crd_x_log, crd_y_log);
+          }
+          for(var i=0;i<=my_edges.length;i++)
           {
             graph.graphData.nodes[i].x = crd_x[i];
             graph.graphData.nodes[i].y = crd_y[i];
           }
-          else
-          {
-            crd_x[i] = crd_x_t[i];
-            crd_y[i] = crd_y_t[i];
+          graphLinksData
+            .attr("x1", d => d.source.x)
+            .attr("y1", d => d.source.y)
+            .attr("x2", d => d.target.x)
+            //.attr("y2", d => d.target.y);
+            .attr("y2", d => d.target.y)
+            .style("stroke", d => d.stroke)
+            .style("stroke-width", d => d["stroke-width"]);
+
+          // Translate the groups
+          graphNodesData
+              .attr("transform", d => {
+                return 'translate(' + [d.x, d.y] + ')';
+              });
+          if(show_collision_circle){
+            graphNodesData
+                .selectAll("circle")
+                .attr("r", d => t.getRadius(d));
           }
+          locked = false;
         }
       }
-      graphLinksData
-        .attr("x1", d => d.source.x)
-        .attr("y1", d => d.source.y)
-        .attr("x2", d => d.target.x)
-        //.attr("y2", d => d.target.y);
-        .attr("y2", d => d.target.y)
-        .style("stroke", d => d.stroke)
-        .style("stroke-width", d => d["stroke-width"]);
+      else{
+        graphLinksData
+          .attr("x1", d => d.source.x)
+          .attr("y1", d => d.source.y)
+          .attr("x2", d => d.target.x)
+          //.attr("y2", d => d.target.y);
+          .attr("y2", d => d.target.y)
+          .style("stroke", d => d.stroke)
+          .style("stroke-width", d => d["stroke-width"]);
 
-      // Translate the groups
-      graphNodesData
-          .attr("transform", d => {
-            return 'translate(' + [d.x, d.y] + ')';
-          });
-      if(show_collision_circle){
+        // Translate the groups
         graphNodesData
-            .selectAll("circle")
-            .attr("r", d => t.getRadius(d));
+            .attr("transform", d => {
+              return 'translate(' + [d.x, d.y] + ')';
+            });
+        if(show_collision_circle){
+          graphNodesData
+              .selectAll("circle")
+              .attr("r", d => t.getRadius(d));
+        }
       }
     }
   }
@@ -1095,6 +1151,8 @@ eps_movement = 2;
 //eps_movement = 20;
 //eps_movement = 50;
 safeMode = false;
+safeModeIter = 1;
+locked = false;
 if(my_edges.length<=2000)
 {
   eps_movement = -1;
@@ -1394,13 +1452,15 @@ function zoomLabels(){
       {
         console.log(labelDoms[i], " overlaps ", labelDoms[j]);
         console.log(rect1, rect2);
-        max_label_reached = false;
+        //max_label_reached = false;
         break;
       }
     }
     if(max_label_reached==true)break;
   }
-  if(!max_label_reached)
+  font_size += 1;
+  d3.select('body').selectAll('text').style("font-size", function(d){if(isNaN(d.name))return font_size+"px"; else return "0px";});
+  /*if(!max_label_reached)
   {
     font_size += 1;
     d3.select('body').selectAll('text').style("font-size", function(d){if(isNaN(d.name))return font_size+"px"; else return "0px";});
@@ -1409,7 +1469,7 @@ function zoomLabels(){
   {
     alert("Can not zoom further!");
     console.log("Area coverage:", areaCoverage(labelDoms));
-  }
+  }*/
 }
 function zoomOutLabels(){
   let labelDoms = d3.select('body').selectAll('text')["_groups"][0];
