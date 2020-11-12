@@ -148,7 +148,10 @@ print("label_to_id = ", label_to_index)
 print("id_to_label = ", index_to_label)
 
 l = levels-1
-cur_dis = 50
+#cur_dis = 50
+cur_dis = 200
+cur_lev = 0
+nodes_to_levels = {}
 while l>=0:
 
   if folder_name == "TopicsLayersData":
@@ -180,12 +183,27 @@ while l>=0:
     else:
       print("Edge not found!")
       quit()
+    nodes_to_levels[e[0]] = cur_lev
+    nodes_to_levels[e[1]] = cur_lev
     edge_distance[edge_index] = cur_dis
   l -= 1
   #cur_dis += 50
-  if l%3==0: cur_dis += 50
+  #cur_lev -= 1
+  if l%2==0:
+    cur_dis += 50
+    cur_lev -= 1
+
+min_lev = nodes_to_levels[list(nodes_to_levels.keys())[0]]
+for k in nodes_to_levels.keys():
+  if min_lev>nodes_to_levels[k]:
+    min_lev = nodes_to_levels[k]
+max_lev = - min_lev + 1
+for k in nodes_to_levels.keys():
+  nodes_to_levels[k] = nodes_to_levels[k] + max_lev
 
 print("edge_distance = ", edge_distance)
+print("nodes_to_levels = ", nodes_to_levels)
+quit()
 
 G = G2
 cnt = {}

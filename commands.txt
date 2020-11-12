@@ -22,4 +22,219 @@ for lucida: source /home/abureyanahmed/Desktop/virtest/bin/activate
 
 1. python parse_layer_file.py
 2. python3 dot_to_setcola.py
+----------------------------------------------------------------------------------------------
+
+vi iter_frce_dir.py
+vi iter_frce_dir_mdlr.py
+vi force_directed_modified.py
+python3 iris_layout.py
+python3 force_directed_modified.py
+vi force_directed_d3.js
+vi force_directed_d3.html
+
+cd /Applications/XAMPP/htdocs/gd2019/
+vi force_directed_d3.html
+vi generate_web_user_data.py
+
+cd /Users/abureyanahmed/multi_level_GD
+vi plot_d3_drawing.py
+
+vi useful_tutorials.txt
+
+vi d3_customized.html
+
+vi dynamic_update_center_away.html
+
+python3 print_javascript_data.py 1
+python3 print_javascript_data.py 2
+python3 print_javascript_data.py 3
+
+vi dynamic_update_comp_single.html
+
+cp dynamic_update_comp_single.html dynamic_update_comp_multiple.html
+----------------------------------------------------------------------------------------------
+timing:
+level 3 graph
+
+dynamic_update_center_away.html -> 99 151 211 320 63
+dynamic_update_comp_single.html -> 86 54 61 105 36
+----------------------------------------------------------------------------------------------
+cp dynamic_update_comp_multiple.html dynamic_update_comp_multiple_safe.html
+----------------------------------------------------------------------------------------------
+vi rectangular_collision.html
+cp dynamic_update_center_away.html dynamic_update_center_away_collision.html
+----------------------------------------------------------------------------------------------
+Call to doSomething took 116028.03500008304 milliseconds.
+Ideal edge length preservation: 0.08092426455740057
+
+Call to doSomething took 145621.68500002008 milliseconds.
+dynamic_update_comp_multiple_safe.html:621 Ideal edge length preservation: 0.057117534680664675
+
+Call to doSomething took 142101.94500000216 milliseconds.
+dynamic_update_comp_multiple_safe.html:621 Ideal edge length preservation: 0.07954265468329072
+
+Call to doSomething took 300097.7100000018 milliseconds.
+dynamic_update_comp_multiple_safe.html:621 Ideal edge length preservation: 0.07872205277106847
+
+Call to doSomething took 105049.82999991626 milliseconds.
+dynamic_update_comp_multiple_safe.html:621 Ideal edge length preservation: 0.06081350452308337
+----------------------------------------------------------------------------------------------
+vi get_edge_data.py
+vi normality_test.py
+----------------------------------------------------------------------------------------------
+lastfm has different format then topics
+
+cp print_javascript_data.py print_javascript_data_topics.py
+python3 print_javascript_data_topics.py 7 >> topics_data.js
+rm topics_data.js
+python3 print_javascript_data_topics.py 3 >> topics_data.js
+
+vi edge_insertion_time.txt
+vi edge_insertion_time.py
+----------------------------------------------------------------------------------------------
+vi convert_low_deg_txt_to_zmlt_dot.py
+zip -r TopicsLayersDataDot.zip TopicsLayersData/Tree_level_*dot
+----------------------------------------------------------------------------------------------
+Current implementation: dynamic_update_comp_multiple_safe.html
+
+instead of drawing edges one by one get a crossing free drawing and run force directed on that drawing , then remove crossing
+
+if we can not remove crossing in a specific number of attempts (because there is not that much space) then lets put some force to move vertices of the problemetic subtree away from the parent. Hopefully it will provide enough space to so the crossings can be removed then.
+----------------------------------------------------------------------------------------------
+vi zmlt_input.dot
+python3 degree_reducer.py -i zmlt_input.dot -o zmlt_output.dot
+It always tries to reduce the degree even if the graph is sparse, and sometimes make the graph disconnected. We should put some checks.
+in line 77, mltree_generator_weighted.py use H=(G.subgraph(c) for c in nx.connected_components(G)), nx.connected_component_subgraphs is deprecated
+python3 mltree_generator_weighted.py zmlt_input.dot
+We may also use Steiner tree and spanner for multi level graph generation
+python3 fix_node_att_add_font_box.py
+We may also use some hueristic since we decided that the labels will be at most 16 characters. We can use the average character width and multiply it by the number of characters in the labels for smaller labels. This heuristic might be computitionally efficient for large graphs.
+----------------------------------------------------------------------------------------------
+cp /Users/abureyanahmed/Downloads/run_pipeline.sh ./
+
+It might be possible to call property_fetcher_scriptfile once, since the labels does not change in the process, right now it is called multiple times.
+The folder information is hardcoded, it assumes the input is lastfm graph, the layer information is also hard coded, fixed 8 layers.
+In the extraction layer the outputs are generated in tmp file, but in the pipeline the expected folders are tmp_workspace/templatefolder and data_main_folder/input.
+We need to create forests and layers folders manually.
+----------------------------------------------------------------------------------------------
+var s = "";
+s = s + "coordinates=[";
+for(var i=0;i<graph.graphData.nodes.length;i++)
+{
+  s = s + "{id:"+graph.graphData.nodes[i]["id"]+", name:"+JSON.stringify(graph.graphData.nodes[i]["name"])+", x:"+graph.graphData.nodes[i]["x"]+", y:"+graph.graphData.nodes[i]["y"]+"}";
+  if(i<graph.graphData.nodes.length-1)s = s + ", ";
+}
+s = s + "];";
+console.log(s);
+
+vi multi_level_vis.html
+scp multi_level_vis.html abureyanahmed@lectura.cs.arizona.edu:/cs/cgi/people/abureyanahmed/public_html/
+----------------------------------------------------------------------------------------------
+Distribute nodes properly
+
+cp print_javascript_data.py distributed_javascript_data.py
+python3 distributed_javascript_data.py 5
+
+The top layer should be a good skeleton
+cp distributed_javascript_data.py skeleton_javascript_data.py
+----------------------------------------------------------------------------------------------
+1600 node topic graph:
+Ideal edge length preservation: 0.31416910257575453
+coordinates stored here:
+vi topics_coordinates_medium.js
+----------------------------------------------------------------------------------------------
+The latest version that works for couple of thousands nodes:
+dynamic_update_comp_multiple_safe.html
+----------------------------------------------------------------------------------------------
+Avoiding Crossing Using Collision Detection
+cp dynamic_update_comp_multiple_safe.html avoiding_crossing_using_collision.html
+----------------------------------------------------------------------------------------------
+cp avoiding_crossing_using_collision.html avoiding_crossing_using_collision_with_support.html
+----------------------------------------------------------------------------------------------
+Reduce the graph sizes
+vi tree_size_reducer.py
+----------------------------------------------------------------------------------------------
+python3 print_javascript_data_topics.py 1 >> low_degree_topics_data_1.js
+python3 print_javascript_data_topics.py 2 >> low_degree_topics_data_2.js
+python3 print_javascript_data_topics.py 3 >> low_degree_topics_data_3.js
+python3 print_javascript_data_topics.py 4 >> low_degree_topics_data_4.js
+python3 print_javascript_data_topics.py 5 >> low_degree_topics_data_5.js
+python3 print_javascript_data_topics.py 14 >> low_degree_topics_data_14.js
+----------------------------------------------------------------------------------------------
+cp print_javascript_data_topics.py print_javascript_data_topics_min_subdivision.py
+python3 print_javascript_data_topics_min_subdivision.py 6 >> low_degree_topics_data_6_min_subdivision.js
+----------------------------------------------------------------------------------------------
+/usr/local/opt/python\@3.8/bin/python3.8 generate_covid_graph.py >> covid_graph_simple.js
+/usr/local/opt/python\@3.8/bin/python3.8 generate_covid_graph.py >> covid_graph_100.js
+----------------------------------------------------------------------------------------------
+vi evolving_tree_plots.py
+python3 print_javascript_data_topics.py 1 >> low_degree_topics_data_300.js
+python3 print_javascript_data_topics.py 2 >> low_degree_topics_data_400.js
+python3 print_javascript_data_topics.py 3 >> low_degree_topics_data_600.js
+python3 print_javascript_data_topics.py 4 >> low_degree_topics_data_700.js
+
+cd evolving_table_figures/
+----------------------------------------------------------------------------------------------
+generate some high degree graphs:
+vi generate_high_degree_tree.py
+rm TopicsLayersData/hard_instance.txt
+python generate_high_degree_tree.py >> TopicsLayersData/hard_instance.txt
+rm hard_instance.js
+python3 print_javascript_data_topics.py 1 >> hard_instance.js
+----------------------------------------------------------------------------------------------
+Vary the collision circle appropriately
+cp avoiding_crossing_using_collision.html avoiding_crossing_appropriate_radius.html
+----------------------------------------------------------------------------------------------
+Use initial layout
+vi generate_initial_layout.py
+cp avoiding_crossing_using_collision.html avoiding_crossing_by_initialization.html
+5000 node topics after 500 iters
+vi crd_5000.txt
+after 1k iterations:
+vi crd_5000_1000.txt
+vi crd_5000_100.txt
+
+vi read_text_coordinates.py
+python3 read_text_coordinates.py >> crd_5000.js
+----------------------------------------------------------------------------------------------
+label_to_go = "field experiment"
+label_to_go = "isotope geochemi"
+label_to_go = "experimental pet"
+label_to_go = "underwater acous"
+label_to_go = "statistical rela"
+label_to_go = "environmental"
+label_to_go = "question answeri"
+label_to_go = "science of scien"
+label_to_go = "collaborative fi"
+label_to_go = "evolutionary dyn"
+label_to_go = "percolation theo"
+label_to_go = "sedimentary geol"
+label_to_go = "voting"
+label_to_go = "performance stud"
+label_to_go = "social computing"
+label_to_go = "martensitic tran"
+label_to_go = "performance"
+label_to_go = "computer simulat"
+label_to_go = "oral surgery"
+label_to_go = "surface modifica"
+label_to_go = "hearing"
+label_to_go = "behavior"
+label_to_go = "deafness"
+label_to_go = "history of polit"
+label_to_go = "translational re"
+label_to_go = "muscle physiolog"
+label_to_go = "quantum control"
+label_to_go = "cavitation"
+label_to_go = "breastfeeding"
+label_to_go = "granular flow"
+label_to_go = "environmental ph"
+label_to_go = "media studies"
+label_right_now = "power system dyn"
+graph.svgGroup.attr("transform", `translate(${-crd_x[label_to_id[label_to_go]]+crd_x[label_to_id[label_right_now]]}, ${-crd_y[label_to_id[label_to_go]]+crd_y[label_to_id[label_right_now]]})`)
+
+
+graph.graphData.nodes[label_to_id[label_to_go]].fx += 100;
+
+
+
 

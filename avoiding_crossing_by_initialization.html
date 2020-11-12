@@ -47,7 +47,9 @@ text {
 <script src="low_degree_topics_data_14.js"></script>  <!-- 5000 -->
 <!-- <script src="crd_5000.js"></script> -->  <!-- 5000 -->
 <!-- <script src="crd_5000_100.js"></script> -->  <!-- 5000 -->
-<script src="crd_5000_200.js"></script>  <!-- 5000 -->
+<!-- <script src="crd_5000_200.js"></script> -->  <!-- 5000 -->
+<!-- <script src="crd_5000_300.js"></script> -->  <!-- 5000 -->
+<script src="crd_5000_300_revised.js"></script>  <!-- 5000 -->
 <!-- <script src="low_degree_topics_data_8.js"></script> -->  <!-- 2000 -->
 <!-- <script src="low_degree_topics_data_7.js"></script> -->  <!-- 1600 -->
 <!-- <script src="low_degree_topics_data_6.js"></script> -->  <!-- 1200 -->
@@ -1437,10 +1439,13 @@ function zoomLabels(){
   let max_label_reached = false;
   let labelDoms = d3.select('body').selectAll('text')["_groups"][0];
   let data = d3.select('body').selectAll('text').data();
+  let count = 0;
   for(var i=0;i<labelDoms.length;i++)
   {
+    //if((data[i].name=="pyrolysis")||(data[i].name=="sports medicine")||(data[i].name=="liquid crystals")||(data[i].name=="uncertainty quan"))continue;
     for(var j=i+1;j<labelDoms.length;j++)
     {
+      //if((data[j].name=="environmental ph")||(data[j].name=="cavitation")||(data[j].name=="quantum control")||(data[j].name=="muscle physiolog")||(data[j].name=="translational re")||(data[j].name=="history of polit")||(data[j].name=="deafness")||(data[j].name=="behavior")||(data[j].name=="hearing")||(data[j].name=="surface modifica")||(data[j].name=="computer simulat")||(data[j].name=="performance")||(data[j].name=="martensitic tran")||(data[j].name=="performance stud")||(data[j].name=="voting")||(data[j].name=="sedimentary geol")||(data[j].name=="percolation theo")||(data[j].name=="evolutionary dyn")||(data[j].name=="science of scien")||(data[j].name=="question answeri")||(data[j].name=="environmental")||(data[j].name=="statistical rela")||(data[j].name=="field experiment")||(data[j].name=="isotope geochemi")||(data[j].name=="underwater acous"))continue;
       if((!isNaN(data[i].name))||(!isNaN(data[j].name)))continue;
       var rect1 = labelDoms[i].getBoundingClientRect();
       var rect2 = labelDoms[j].getBoundingClientRect();
@@ -1450,14 +1455,18 @@ function zoomLabels(){
                 rect1.top > rect2.bottom)
       if(max_label_reached)
       {
-        console.log(labelDoms[i], " overlaps ", labelDoms[j]);
-        console.log(rect1, rect2);
-        //max_label_reached = false;
-        break;
+        if(count==0){
+          console.log(labelDoms[i], " overlaps ", labelDoms[j]);
+          console.log(rect1, rect2);
+        }
+        count += 1;
+        ////max_label_reached = false;
+        //break;
       }
     }
-    if(max_label_reached==true)break;
+    //if(max_label_reached==true)break;
   }
+  console.log("count:", count);
   font_size += 1;
   d3.select('body').selectAll('text').style("font-size", function(d){if(isNaN(d.name))return font_size+"px"; else return "0px";});
   /*if(!max_label_reached)
