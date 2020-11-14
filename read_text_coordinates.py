@@ -2,7 +2,9 @@
 #filename = "crd_5000_100.txt"
 #filename = "crd_5000_200.txt"
 #filename = "crd_5000_300.txt"
-filename = "crd_5000_300_revised.txt";
+#filename = "crd_5000_300_revised.txt";
+#filename = "crd_5000_700.txt";
+filename = "crd_5000_700_revised.txt";
 
 f = open(filename, 'r')
 crd_x = {}

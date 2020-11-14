@@ -44,12 +44,15 @@ text {
 <!-- <script src="ideal_edge_lenghth_preservation.js"></script> -->
 <script src="ideal_edge_lenghth_preservation_mingwei.js"></script>
 <!-- 2500 3000 3500 4000 4500 5000 -->
-<script src="low_degree_topics_data_14.js"></script>  <!-- 5000 -->
+<!-- <script src="topics_zmlt_input.js"></script> -->  <!-- 5000 -->
+<script src="topics_zmlt_input_v2.js"></script>  <!-- 5000 -->
+<!-- <script src="low_degree_topics_data_14.js"></script> -->  <!-- 5000 -->
 <!-- <script src="crd_5000.js"></script> -->  <!-- 5000 -->
 <!-- <script src="crd_5000_100.js"></script> -->  <!-- 5000 -->
 <!-- <script src="crd_5000_200.js"></script> -->  <!-- 5000 -->
 <!-- <script src="crd_5000_300.js"></script> -->  <!-- 5000 -->
-<script src="crd_5000_300_revised.js"></script>  <!-- 5000 -->
+<!-- <script src="crd_5000_300_revised.js"></script> -->  <!-- 5000 -->
+<!-- <script src="crd_5000_700.js"></script> -->  <!-- 5000 -->
 <!-- <script src="low_degree_topics_data_8.js"></script> -->  <!-- 2000 -->
 <!-- <script src="low_degree_topics_data_7.js"></script> -->  <!-- 1600 -->
 <!-- <script src="low_degree_topics_data_6.js"></script> -->  <!-- 1200 -->
@@ -1086,6 +1089,10 @@ function startAddingEdges() {
     let newId = label_to_id[my_edges[my_count][1]];
     //let newNode = {"id": randomId, "name": "server " + randomId};
     let newNode = {"id": newId, "name": my_edges[my_count][1]};
+    /*if(nodes_to_levels[my_edges[my_count][1]]>2)
+    {
+      newNode.name = "";
+    }*/
     /*if (existingNode.x) {
       //newNode.x = existingNode.x;
       //newNode.y = existingNode.y;
@@ -1124,7 +1131,7 @@ function initForceDirected()
       graph.graphData.nodes[i].fy = null;
     //}
   }
-  if(my_edges.length>2000)
+  //if(my_edges.length>2000)
   {
     safeMode = true;
     node_to_links = {};
@@ -1161,6 +1168,14 @@ if(my_edges.length<=2000)
 }
 function stopForceDirected() {
   clearInterval(startForceDirectedInterval);
+  if(safeMode){
+    locked = true;
+    for(var i=0;i<=my_edges.length;i++)
+    {
+      graph.graphData.nodes[i].fx = crd_x[i];
+      graph.graphData.nodes[i].fy = crd_y[i];
+    }
+  }
   if(safeMode==false)
   {
     if(eps_movement!=-1){
@@ -1480,6 +1495,98 @@ function zoomLabels(){
     console.log("Area coverage:", areaCoverage(labelDoms));
   }*/
 }
+function findLabelOverlaps(){
+  safeMode = false;
+  let max_label_reached = false;
+  let labelDoms = d3.select('body').selectAll('text')["_groups"][0];
+  let data = d3.select('body').selectAll('text').data();
+  let count = 0;
+  for(var i=0;i<labelDoms.length;i++)
+  {
+    for(var j=i+1;j<labelDoms.length;j++)
+    {
+      if((!isNaN(data[i].name))||(!isNaN(data[j].name)))continue;
+      var rect1 = labelDoms[i].getBoundingClientRect();
+      var rect2 = labelDoms[j].getBoundingClientRect();
+      max_label_reached = !(rect1.right < rect2.left ||
+                rect1.left > rect2.right ||
+                rect1.bottom < rect2.top ||
+                rect1.top > rect2.bottom)
+      if(max_label_reached)
+      {
+        first_overlapping_label = id_to_label[i];
+        label_to_go = id_to_label[j];
+        label_right_now = document.getElementById("centerLabelID").value;
+        //label_right_now = my_edges[0][0];
+        graph.svgGroup.attr("transform", `translate(${-crd_x[label_to_id[label_to_go]]+crd_x[label_to_id[label_right_now]]}, ${-crd_y[label_to_id[label_to_go]]+crd_y[label_to_id[label_right_now]]})`);
+        if(count==0){
+          console.log(labelDoms[i], " overlaps ", labelDoms[j]);
+          console.log(rect1, rect2);
+        }
+        count += 1;
+        //max_label_reached = false;
+        break;
+      }
+    }
+    if(max_label_reached==true)break;
+  }
+  console.log("count:", count);
+  font_size += 1;
+  d3.select('body').selectAll('text').style("font-size", function(d){if(isNaN(d.name))return font_size+"px"; else return "0px";});
+  /*if(!max_label_reached)
+  {
+    font_size += 1;
+    d3.select('body').selectAll('text').style("font-size", function(d){if(isNaN(d.name))return font_size+"px"; else return "0px";});
+  }
+  else
+  {
+    alert("Can not zoom further!");
+    console.log("Area coverage:", areaCoverage(labelDoms));
+  }*/
+}
+function labelUp()
+{
+  graph.graphData.nodes[label_to_id[label_to_go]].fy -= 10;
+}
+function labelDown()
+{ 
+  graph.graphData.nodes[label_to_id[label_to_go]].fy += 10;
+}
+function labelLeft()
+{
+  graph.graphData.nodes[label_to_id[label_to_go]].fx -= 10;
+}
+function labelRight()
+{ 
+  graph.graphData.nodes[label_to_id[label_to_go]].fx += 10;
+}
+function labelUpOther()
+{
+  graph.graphData.nodes[label_to_id[first_overlapping_label]].fy -= 10;
+}
+function labelDownOther()
+{
+  graph.graphData.nodes[label_to_id[first_overlapping_label]].fy += 10;
+}
+function labelLeftOther()
+{
+  graph.graphData.nodes[label_to_id[first_overlapping_label]].fx -= 10;
+}
+function labelRightOther()
+{
+  graph.graphData.nodes[label_to_id[first_overlapping_label]].fx += 10;
+}
+function printCoordinates()
+{
+  let crd_x_rev = {};
+  let crd_y_rev = {};
+  for(var l=0;l<=my_edges.length;l++){
+    crd_x_rev[l] = graph.graphData.nodes[l].fx;
+    crd_y_rev[l] = graph.graphData.nodes[l].fy;
+  }
+  console.log(crd_x_rev, crd_y_rev);
+  console.log("Number of crossings:", linkCrossingsWithCrds (crd_x_rev, crd_y_rev).length);
+}
 function zoomOutLabels(){
   let labelDoms = d3.select('body').selectAll('text')["_groups"][0];
   font_size -= 1;
@@ -1521,5 +1628,16 @@ myInit();
 <input type="button" value="zoom out" onclick="zoomOutLabels()">
 <input type="button" value="start" onclick="initForceDirected()">
 <input type="button" value="stop" onclick="stopForceDirected()"><br>
+<label for="centerLabelID">Center label ID:</label> <input type="text" id="centerLabelID" name="centerLabel">
+<input type="button" value="Find overlap" onclick="findLabelOverlaps()">
+<input type="button" value="Left" onclick="labelLeft()">
+<input type="button" value="Right" onclick="labelRight()">
+<input type="button" value="Up" onclick="labelUp()">
+<input type="button" value="Down" onclick="labelDown()">
+<input type="button" value="Left" onclick="labelLeftOther()">
+<input type="button" value="Right" onclick="labelRightOther()">
+<input type="button" value="Up" onclick="labelUpOther()">
+<input type="button" value="Down" onclick="labelDownOther()">
+<input type="button" value="Print" onclick="printCoordinates()">
 
 </body></html>
